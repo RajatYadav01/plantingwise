@@ -1,0 +1,27 @@
+{
+	"name": "@plantingwise/constants",
+	"version": "0.0.0",
+	"private": true,
+	"license": "BSD-3-Clause",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"format": "biome format --write",
+		"lint": "biome lint",
+		"fix": "biome check --write",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"build:types": "tsc -b",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@plantingwise/schemas": "workspace:*",
+		"@plantingwise/types": "workspace:*"
+	},
+	"devDependencies": {
+		"@plantingwise/tsconfig": "workspace:*"
+	}
+}

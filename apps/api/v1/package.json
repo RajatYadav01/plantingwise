@@ -1,0 +1,46 @@
+{
+	"name": "@plantingwise/api-v1",
+	"version": "0.1.0",
+	"private": true,
+	"license": "BSD-3-Clause",
+	"type": "module",
+	"scripts": {
+		"format": "biome format --write",
+		"lint": "biome lint",
+		"fix": "biome check --write",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"build:types": "tsc -b",
+		"test": "vitest run",
+		"test:unit": "vitest run unit.test.ts --passWithNoTests",
+		"test:integration": "vitest run integration.test.ts --passWithNoTests",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest --watch",
+		"dev": "tsx watch src/server.ts",
+		"start": "node dist/index.js",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@plantingwise/config": "workspace:*",
+		"@plantingwise/constants": "workspace:*",
+		"@plantingwise/database": "workspace:*",
+		"@plantingwise/schemas": "workspace:*",
+		"bcryptjs": "^3.0.3",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.6",
+		"dotenv": "^18.0.9",
+		"drizzle-orm": "^1.0.0-rc.5",
+		"express": "^5.3.0",
+		"express-rate-limit": "^8.7.2",
+		"jsonwebtoken": "^9.0.3"
+	},
+	"devDependencies": {
+		"@types/cookie-parser": "^1.4.10",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.6",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/supertest": "^7.2.1",
+		"drizzle-kit": "^1.0.0-rc.5",
+		"supertest": "^7.3.1"
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"extends": "@plantingwise/tsconfig/nodejs.json",
+	"compilerOptions": {
+		"types": ["node", "vitest/globals"],
+		"rootDir": ".",
+		"outDir": "./dist"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts", "vitest.setup.ts"]
+}

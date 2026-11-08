@@ -1,0 +1,29 @@
+{
+	"name": "@plantingwise/config",
+	"version": "0.0.0",
+	"private": true,
+	"license": "BSD-3-Clause",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./api-env": "./src/env/api-env.ts",
+		"./mobile-env": "./src/env/mobile-env.ts"
+	},
+	"scripts": {
+		"format": "biome format --write",
+		"lint": "biome lint",
+		"fix": "biome check --write",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"test": "vitest run",
+		"build:types": "tsc -b",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@plantingwise/tsconfig": "workspace:*"
+	}
+}

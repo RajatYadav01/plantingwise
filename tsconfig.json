@@ -1,0 +1,12 @@
+{
+	"files": [],
+	"references": [
+		{ "path": "apps/mobile" },
+        { "path": "apps/api/v1" },
+		{ "path": "packages/database" },
+		{ "path": "packages/e2e-tests" },
+		{ "path": "packages/constants" },
+		{ "path": "packages/types" },
+		{ "path": "packages/schemas" }
+	]
+}

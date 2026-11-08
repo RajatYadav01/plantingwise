@@ -1,0 +1,9 @@
+{
+	"extends": "@plantingwise/tsconfig/nodejs.json",
+	"compilerOptions": {
+		"types": ["node", "@playwright/test"],
+		"noEmit": true
+	},
+	"include": ["test", "playwright.config.ts"],
+	"exclude": ["node_modules"]
+}

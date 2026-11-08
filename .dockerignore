@@ -1,0 +1,14 @@
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/.expo
+**/dist
+**/coverage
+**/playwright-report
+**/test-results
+.git
+.gitignore
+.pnpm-store
+.turbo
+.DS_Store

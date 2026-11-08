@@ -1,0 +1,26 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"tasks": {
+		"build": { "dependsOn": ["^build"], "outputs": [".next/**", "!.next/cache/**", "dist/**"] },
+		"dev": { "cache": false, "persistent": true },
+		"dev:mobile": {
+			"cache": false,
+			"persistent": true
+		},
+		"dev:web": {
+			"cache": false,
+			"persistent": true
+		},
+		"format": { "dependsOn": ["^format"] },
+		"lint": { "dependsOn": ["^lint"] },
+		"fix": { "dependsOn": ["^fix"] },
+		"lint:report": {
+			"cache": true,
+			"outputs": ["lint-report.json"]
+		},
+		"build:types": { "dependsOn": ["^build:types"] },
+		"typecheck": { "dependsOn": ["^build:types"] },
+		"test": { "dependsOn": ["^build"], "outputs": ["coverage/**"] },
+		"db:generate": { "cache": false }
+	}
+}
