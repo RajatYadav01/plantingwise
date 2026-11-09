@@ -16,7 +16,7 @@ Plantingwise helps people identify houseplants from photos, review possible visi
       - [1. Clone the project's repository](#1-clone-the-projects-repository)
       - [2. Install dependencies](#2-install-dependencies)
       - [3. Configure local environment variables](#3-configure-local-environment-variables)
-      - [4. Start PostgreSQL, and migrate](#4-start-postgresql-and-migrate)
+      - [4. Setup the database](#4-setup-the-database)
       - [5. Start the web application](#5-start-the-web-application)
       - [6. Run checks and browser tests](#6-run-checks-and-browser-tests)
       - [To run the project using Docker](#to-run-the-project-using-docker)
@@ -131,7 +131,6 @@ On iOS and Android, the app can use the device camera/photo library, haptics, an
 - PostgreSQL (preferably, version >= v18.x)
 - pnpm (preferably, version >= v12.5.1)
 - OpenRouter account
-- OpenSSL (or another secure random generator)
 - Docker (preferably the latest version)
 - Git (preferably the latest version)
 
@@ -148,14 +147,13 @@ cd plantingwise
 
 #### 2. Install dependencies
 
-Enable Corepack and install the workspace dependencies from the monorepo root:
+Install the workspace dependencies from the monorepo root:
 
 ```shell
-corepack enable
 pnpm install
 ```
 
-The root `package.json` pins pnpm to `10.20.0`. If this checkout does not yet contain a `pnpm-lock.yaml`, the first install will create one; commit that lockfile so local development and CI use reproducible dependency versions.
+If this checkout does not yet contain a `pnpm-lock.yaml`, the first install will create one; commit that lockfile so local development and CI use reproducible dependency versions.
 
 #### 3. Configure local environment variables
 
@@ -194,9 +192,9 @@ For sample-only mode, set `DATABASE_URL=`, `JWT_SECRET=`, and `OPENROUTER_API_KE
 
 The Zod schemas in `packages/config/src/env/api-env.ts` and `mobile-env.ts` validate each app's environment independently. Expo statically embeds `EXPO_PUBLIC_*` values into the client bundle, so these variables must never contain secrets. Restart Expo after changing client environment values.
 
-#### 4. Start PostgreSQL, and migrate
+#### 4. Setup the database
 
-Plantingwise uses **Neon, which is a managed PostgreSQL service**. You do not need to start a local PostgreSQL server for the standard setup. Create a Neon project/database, copy its connection string into `DATABASE_URL` in `apps/api/v1/.env`, and ensure the API environment file is saved.
+Create a local PostgreSQL database using the desired credentials (database name, username, and password). Then, construct a connection string using those credentials, add it to the `DATABASE_URL` variable in `apps/api/v1/.env`, and save the file.
 
 The database package owns `drizzle.config.ts` and all database lifecycle scripts. From the repository root, generate the initial migration and apply it:
 
@@ -228,7 +226,7 @@ Run the API and Expo web app in separate terminal windows from the repository ro
 **Terminal 1 — API**
 
 ```shell
-pnpm dev:api
+pnpm dev:api:v1
 ```
 
 The API health endpoint should be available at `http://localhost:4000/api/v1/health`.
@@ -250,8 +248,11 @@ If you test on a physical phone, set `EXPO_PUBLIC_API_URL` to your computer's re
 Run the Biome checks, TypeScript checks, Vitest suites, and Playwright browser tests from the repository root:
 
 ```shell
-# Lint, formatting and other Biome checks (without writing changes)
-pnpm check
+# Format files with Biome
+pnpm format
+
+# Lint files with Biome
+pnpm lint
 
 # TypeScript checks across workspaces
 pnpm typecheck
@@ -284,37 +285,33 @@ Vitest configuration and setup files are maintained per workspace. Unit and inte
 
 #### To run the project using Docker
 
-Docker Compose builds and starts the API container and the static Expo web application. The current `docker-compose.yml` **does not start a PostgreSQL container**; the API still connects to Neon. Create and configure the API environment file first:
+1. Clone the project's repository.
 
-```shell
-cp apps/api/v1/.env.example apps/api/v1/.env
-```
+   ```shell
+   git clone https://github.com/rajatyadav01/plantingwise.git
+   ```
 
-For connected mode, set a valid Neon `DATABASE_URL` and a strong `JWT_SECRET` in `apps/api/v1/.env`. For a sample-only walkthrough, leave both values empty. The mobile web image receives `EXPO_PUBLIC_API_URL` at build time; its default is `http://localhost:4000`.
+2. Move into the root directory of the project folder.
 
-Build and start both containers from the repository root:
+   ```shell
+   cd plantingwise
+   ```
 
-```shell
-docker compose up --build
-```
+3. Run the project using docker-compose.
 
-Or use the root scripts:
+   ```shell
+   docker-compose up --build
+   ```
 
-```shell
-pnpm docker:up
-```
+   Open:
 
-Open:
+   - **Plantingwise web app:** `http://localhost:8082`
+   - **API health check:** `http://localhost:4001/api/v1/health`
 
-- **Plantingwise web app:** `http://localhost:8081`
-- **API health check:** `http://localhost:4000/api/v1/health`
+   The mobile Dockerfile exports the Expo web target and serves the static files with Nginx; it does not create an Android APK or iOS application build. `EXPO_PUBLIC_API_URL` is a public build-time setting embedded in the web bundle. API secrets are injected at container runtime using `apps/api/v1/.env` and are never baked into the Docker image.
 
-Stop the containers with:
+4. Stop the containers with:
 
-```shell
-docker compose down
-# or
-pnpm docker:down
-```
-
-The mobile Dockerfile exports the Expo web target and serves the static files with Nginx; it does not create an Android APK or iOS application build. `EXPO_PUBLIC_API_URL` is a public build-time setting embedded in the web bundle. API secrets are injected at container runtime using `apps/api/v1/.env` and are never baked into the Docker image.
+   ```shell
+   docker compose down
+   ```
