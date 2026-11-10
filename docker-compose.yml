@@ -1,28 +1,85 @@
 services:
-  api:
-    # Root build context is needed because the API depends on packages/* workspaces.
+  plantingwise-database:
+    container_name: plantingwise-database
+    image: postgres:18
+    environment:
+      - POSTGRES_DB=plantingwise
+      - POSTGRES_USER=plantingwise
+      - POSTGRES_PASSWORD=161211420
+    volumes:
+      - plantingwise_database_data:/var/lib/postgresql
+    ports:
+      - "5440:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "plantingwise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - plantingwise
+
+  plantingwise-database-init:
+    container_name: plantingwise-database-init
+    image: plantingwise-web:local
     build:
       context: .
       dockerfile: apps/api/v1/Dockerfile
-    env_file:
-      - ./apps/api/v1/.env
+    depends_on:
+      plantingwise-database:
+        condition: service_healthy
     environment:
-      # Local HTTP demos need non-Secure cookies; deploy with NODE_ENV=production behind HTTPS.
+      NODE_ENV: development
+      DATABASE_URL: postgresql://plantingwise:161211420@plantingwise-database:5432/plantingwise
+    volumes:
+      - /app/node_modules
+    command:
+      - sh
+      - -c
+      - pnpm db:migrate
+    restart: "no"
+    networks:
+      - plantingwise
+
+  plantingwise-api:
+    build:
+      context: .
+      dockerfile: apps/api/v1/Dockerfile
+    environment:
       NODE_ENV: development
       PORT: 4000
+      DATABASE_URL: postgresql://plantingwise:161211420@plantingwise-database:5432/plantingwise
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8082}
+      COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-lax}
     ports:
-      - "4000:4000"
+      - "4001:4000"
+    depends_on:
+      plantingwise-database:
+        condition: service_healthy
+      plantingwise-database-init:
+        condition: service_completed_successfully
     restart: unless-stopped
 
-  mobile-web:
-    # Builds the Expo web target; EXPO_PUBLIC_API_URL is embedded at build time.
+  plantingwise-web:
+    container_name: plantingwise-web
+    image: plantingwise-web:local
     build:
       context: .
       dockerfile: apps/mobile/Dockerfile
       args:
-        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-http://localhost:4000}
+        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-http://localhost:4001}
     ports:
-      - "8081:80"
+      - "8082:80"
     depends_on:
-      - api
+      plantingwise-api:
+        condition: service_healthy
+    volumes:
+      - /app/node_modules
     restart: unless-stopped
+
+volumes:
+  plantingwise_database_data:
+
+networks:
+  plantingwise:
+    driver: bridge
