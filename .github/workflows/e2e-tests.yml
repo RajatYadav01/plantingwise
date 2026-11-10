@@ -24,9 +24,6 @@ jobs:
 
     env:
       DATABASE_URL: postgres://postgres:password@localhost:5432/test_db
-      APP_URL: http://localhost:3000
-      AUTH_SECRET: ci-only-test-secret
-      APP_ENCRYPTION_KEY: ${{ secrets.CI_APP_ENCRYPTION_KEY }}
 
     services:
       postgres:
@@ -65,9 +62,6 @@ jobs:
 
       - name: Apply database migrations
         run: pnpm db:migrate
-
-      - name: Seed demo data
-        run: pnpm db:seed
 
       - name: Run Playwright tests
         run: pnpm test:e2e

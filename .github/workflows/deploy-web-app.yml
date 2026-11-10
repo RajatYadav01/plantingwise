@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   deploy-web-app:
-    name: Deploy to Vercel
+    name: Deploy Web App to Vercel
     runs-on: ubuntu-latest
     environment: production
 
@@ -68,18 +68,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: vercel build --prod --token="$VERCEL_TOKEN"
-
-      - name: Run production database migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm db:migrate
-
-      - name: Seed sample production data
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NODE_ENV: production
-          ALLOW_DEMO_SEED: ${{ secrets.ALLOW_DEMO_SEED }}
-        run: pnpm db:seed
 
       - name: Deploy production artifacts
         run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
