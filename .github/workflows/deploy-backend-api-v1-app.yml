@@ -1,3 +1,4 @@
+
 name: Deploy Backend API v1 App
 
 on:
@@ -5,33 +6,90 @@ on:
     workflows: ["All Checks"]
     types:
       - completed
+    branches:
+      - main
+
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   deploy-backend-api-v1-app:
+    name: Migrate Database and Deploy API
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: production
+
     concurrency:
-      group: backend-api-v1-deploy
+      group: backend-api-v1-production
       cancel-in-progress: false
 
+    # Only deploy after successful checks on a trusted push to main.
+    # Manual deployments are also restricted to main.
     if: >-
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') ||
-      (github.event_name == 'workflow_dispatch')
+      (
+        github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.head_repository.full_name == github.repository
+      ) ||
+      (
+        github.event_name == 'workflow_dispatch' &&
+        github.ref == 'refs/heads/main'
+      )
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DEPLOY_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
     steps:
+      # Check out exactly the commit that passed All Checks.
+      - name: Checkout tested commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          fetch-depth: 1
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Apply production database migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm db:migrate
 
-      - name: Seed sample production data
+      # Trigger the Render deployment for the exact tested commit.
+      - name: Trigger Render API deployment
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NODE_ENV: production
-          ALLOW_DEMO_SEED: ${{ secrets.ALLOW_DEMO_SEED }}
-        run: pnpm db:seed
-
-      - name: Trigger Render Deployment via Deploy Hook
-        # Send an empty POST request to Render's internal secure URL string
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.API_V1_RENDER_DEPLOY_HOOK_URL }}
+        shell: bash
         run: |
-          curl -X POST "${{ secrets.API_V1_RENDER_DEPLOY_HOOK_URL }}"
+          if [[ -z "$RENDER_DEPLOY_HOOK_URL" ]]; then
+            echo "::error::RENDER_DEPLOY_HOOK_URL is not configured."
+            exit 1
+          fi
+
+          # Render deploy hooks commonly contain an existing query string.
+          if [[ "$RENDER_DEPLOY_HOOK_URL" == *"?"* ]]; then
+            DEPLOY_URL="${RENDER_DEPLOY_HOOK_URL}&ref=${DEPLOY_SHA}"
+          else
+            DEPLOY_URL="${RENDER_DEPLOY_HOOK_URL}?ref=${DEPLOY_SHA}"
+          fi
+
+          curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --request POST \
+            "$DEPLOY_URL"
