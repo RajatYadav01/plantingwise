@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import { getApiEnv } from "../environment";
+import { getApiEnv } from "../environment.ts";
 
 const COOKIE_NAME = "plantingwise_session";
 const SESSION_SECONDS = 7 * 24 * 60 * 60;
@@ -44,7 +44,7 @@ export function clearSessionCookie(res: Response) {
 	res.clearCookie(COOKIE_NAME, options);
 }
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export function requireAuth<P>(req: Request<P>, res: Response, next: NextFunction) {
 	const token = req.cookies?.[COOKIE_NAME] as string | undefined;
 	if (!token) {
 		res.status(401).json({ error: "Please sign in to access your garden.", code: "UNAUTHENTICATED" });
@@ -69,7 +69,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 	}
 }
 
-export function optionalAuth(req: Request, res: Response, next: NextFunction) {
+export function optionalAuth<P>(req: Request<P>, res: Response, next: NextFunction) {
 	const token = req.cookies?.[COOKIE_NAME] as string | undefined;
 	if (!token) {
 		next();

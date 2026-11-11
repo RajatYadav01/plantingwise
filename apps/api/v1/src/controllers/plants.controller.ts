@@ -2,8 +2,9 @@ import { careTasks, getDb, plants } from "@plantingwise/database";
 import { savePlantSchema } from "@plantingwise/schemas";
 import { and, desc, eq } from "drizzle-orm";
 import type { Request, Response } from "express";
-import { getApiEnv } from "../environment";
-import { sendZodError } from "../middleware/validation.middleware";
+import { getApiEnv } from "../environment.ts";
+import { sendZodError } from "../middleware/validation.middleware.ts";
+import type { IdRouteParams } from "../types/route-params.ts";
 
 export async function listPlants(request: Request, response: Response): Promise<void> {
 	const db = getDb(getApiEnv().DATABASE_URL);
@@ -54,7 +55,7 @@ export async function createPlant(request: Request, response: Response): Promise
 	response.status(201).json({ plant, task });
 }
 
-export async function deletePlant(request: Request, response: Response): Promise<void> {
+export async function deletePlant(request: Request<IdRouteParams>, response: Response): Promise<void> {
 	const db = getDb(getApiEnv().DATABASE_URL);
 	const deleted = await db
 		.delete(plants)

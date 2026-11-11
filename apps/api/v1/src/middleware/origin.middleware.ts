@@ -1,6 +1,6 @@
 import cors from "cors";
 import type { RequestHandler } from "express";
-import { getApiEnv } from "../environment";
+import { getApiEnv } from "../environment.ts";
 
 const environment = getApiEnv();
 const defaultOrigins =

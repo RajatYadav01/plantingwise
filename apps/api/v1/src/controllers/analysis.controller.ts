@@ -2,9 +2,9 @@ import { sampleHealthResult, sampleIdentification } from "@plantingwise/constant
 import { analyses, getDb } from "@plantingwise/database";
 import { analysisRequestSchema } from "@plantingwise/schemas";
 import type { Request, Response } from "express";
-import { getApiEnv } from "../environment";
-import { sendZodError } from "../middleware/validation.middleware";
-import { runAiAnalysis } from "../services/analysis.service";
+import { getApiEnv } from "../environment.ts";
+import { sendZodError } from "../middleware/validation.middleware.ts";
+import { runAiAnalysis } from "../services/analysis.service.ts";
 
 export async function identify(request: Request, response: Response): Promise<void> {
 	const parsed = analysisRequestSchema.safeParse(request.body);

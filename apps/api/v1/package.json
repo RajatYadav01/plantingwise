@@ -17,7 +17,7 @@
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest --watch",
 		"dev": "tsx watch src/server.ts",
-		"start": "node dist/index.js",
+		"start": "node dist/src/server.js",
 		"clean": "rm -rf dist"
 	},
 	"dependencies": {
@@ -25,6 +25,7 @@
 		"@plantingwise/constants": "workspace:*",
 		"@plantingwise/database": "workspace:*",
 		"@plantingwise/schemas": "workspace:*",
+		"@plantingwise/types": "workspace:*",
 		"bcryptjs": "^3.0.3",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.6",
@@ -35,6 +36,7 @@
 		"jsonwebtoken": "^9.0.3"
 	},
 	"devDependencies": {
+		"@plantingwise/tsconfig": "workspace:*",
 		"@types/cookie-parser": "^1.4.10",
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",

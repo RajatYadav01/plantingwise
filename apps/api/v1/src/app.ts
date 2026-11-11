@@ -1,10 +1,10 @@
 import cookieParser from "cookie-parser";
-import express from "express";
-import { errorHandler } from "./middleware/error-handler.middleware";
-import { corsMiddleware, originGuard } from "./middleware/origin.middleware";
-import apiRoutes from "./routes";
+import express, { type Express } from "express";
+import { errorHandler } from "./middleware/error-handler.middleware.ts";
+import { corsMiddleware, originGuard } from "./middleware/origin.middleware.ts";
+import apiRoutes from "./routes/index.ts";
 
-const app = express();
+const app: Express = express();
 
 app.disable("x-powered-by");
 app.use(originGuard);

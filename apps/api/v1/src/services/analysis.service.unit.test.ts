@@ -1,6 +1,6 @@
 import { sampleHealthResult, sampleIdentification } from "@plantingwise/constants";
 import { describe, expect, it } from "vitest";
-import { getSampleAnalysis, parseModelJson } from "./analysis.service";
+import { getSampleAnalysis, parseModelJson } from "./analysis.service.ts";
 
 describe("AI analysis helpers", () => {
 	it("returns the correct sample result for each mode", () => {

@@ -1,6 +1,6 @@
 import { sampleHealthResult, sampleIdentification } from "@plantingwise/constants";
 import { type AnalysisMode, analysisRequestSchema, analysisResultSchema } from "@plantingwise/schemas";
-import { getApiEnv } from "../environment";
+import { getApiEnv } from "../environment.ts";
 
 export function getSampleAnalysis(mode: AnalysisMode) {
 	return mode === "health" ? sampleHealthResult : sampleIdentification;

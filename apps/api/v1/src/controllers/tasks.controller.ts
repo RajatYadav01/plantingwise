@@ -2,8 +2,9 @@ import { careTasks, getDb } from "@plantingwise/database";
 import { completeTaskSchema } from "@plantingwise/schemas";
 import { and, asc, eq } from "drizzle-orm";
 import type { Request, Response } from "express";
-import { getApiEnv } from "../environment";
-import { sendZodError } from "../middleware/validation.middleware";
+import { getApiEnv } from "../environment.ts";
+import { sendZodError } from "../middleware/validation.middleware.ts";
+import type { IdRouteParams } from "../types/route-params.ts";
 
 export async function listTasks(request: Request, response: Response): Promise<void> {
 	const db = getDb(getApiEnv().DATABASE_URL);
@@ -11,7 +12,7 @@ export async function listTasks(request: Request, response: Response): Promise<v
 	response.json({ tasks: rows });
 }
 
-export async function completeTask(request: Request, response: Response): Promise<void> {
+export async function completeTask(request: Request<IdRouteParams>, response: Response): Promise<void> {
 	const parsed = completeTaskSchema.safeParse(request.body);
 	if (!parsed.success) {
 		sendZodError(response, parsed.error.issues);

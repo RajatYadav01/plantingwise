@@ -3,9 +3,9 @@ import { loginSchema, registerSchema } from "@plantingwise/schemas";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import type { Request, Response } from "express";
-import { getApiEnv } from "../environment";
-import { clearSessionCookie, setSessionCookie } from "../middleware/auth.middleware";
-import { sendZodError } from "../middleware/validation.middleware";
+import { getApiEnv } from "../environment.ts";
+import { clearSessionCookie, setSessionCookie } from "../middleware/auth.middleware.ts";
+import { sendZodError } from "../middleware/validation.middleware.ts";
 
 export async function register(request: Request, response: Response): Promise<void> {
 	const parsed = registerSchema.safeParse(request.body);

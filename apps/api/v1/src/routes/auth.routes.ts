@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { getCurrentSession, login, logout, register } from "../controllers/auth.controller";
-import { asyncHandler } from "../middleware/async-handler.middleware";
-import { requireAuth } from "../middleware/auth.middleware";
+import { getCurrentSession, login, logout, register } from "../controllers/auth.controller.ts";
+import { asyncHandler } from "../middleware/async-handler.middleware.ts";
+import { requireAuth } from "../middleware/auth.middleware.ts";
 
-const router = Router();
+const router: Router = Router();
 router.post("/register", asyncHandler(register));
 router.post("/login", asyncHandler(login));
 router.get("/me", requireAuth, getCurrentSession);

@@ -1,5 +1,5 @@
-import app from "./app";
-import { getApiEnv } from "./environment";
+import app from "./app.ts";
+import { getApiEnv } from "./environment.ts";
 
 const { PORT } = getApiEnv();
 app.listen(PORT, "0.0.0.0", () => {

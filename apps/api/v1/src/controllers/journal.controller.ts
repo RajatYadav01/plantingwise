@@ -2,10 +2,11 @@ import { getDb, journalEntries, plants } from "@plantingwise/database";
 import { journalEntrySchema } from "@plantingwise/schemas";
 import { and, desc, eq } from "drizzle-orm";
 import type { Request, Response } from "express";
-import { getApiEnv } from "../environment";
-import { sendZodError } from "../middleware/validation.middleware";
+import { getApiEnv } from "../environment.ts";
+import { sendZodError } from "../middleware/validation.middleware.ts";
+import type { IdRouteParams } from "../types/route-params.ts";
 
-export async function listJournalEntries(request: Request, response: Response): Promise<void> {
+export async function listJournalEntries(request: Request<IdRouteParams>, response: Response): Promise<void> {
 	const db = getDb(getApiEnv().DATABASE_URL);
 	const [plant] = await db
 		.select({ id: plants.id })
@@ -25,7 +26,7 @@ export async function listJournalEntries(request: Request, response: Response): 
 	response.json({ entries });
 }
 
-export async function createJournalEntry(request: Request, response: Response): Promise<void> {
+export async function createJournalEntry(request: Request<IdRouteParams>, response: Response): Promise<void> {
 	const parsed = journalEntrySchema.safeParse(request.body);
 	if (!parsed.success) {
 		sendZodError(response, parsed.error.issues);

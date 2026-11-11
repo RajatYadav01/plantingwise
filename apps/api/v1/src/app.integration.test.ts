@@ -1,6 +1,6 @@
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import app from "./app";
+import app from "./app.ts";
 
 const originalDatabaseUrl = process.env.DATABASE_URL;
 const originalOpenRouterKey = process.env.OPENROUTER_API_KEY;

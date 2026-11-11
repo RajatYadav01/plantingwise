@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getApiEnv } from "../environment";
+import { getApiEnv } from "../environment.ts";
 
 export function getHealth(_request: Request, response: Response): void {
 	const environment = getApiEnv();
